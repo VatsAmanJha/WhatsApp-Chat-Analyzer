@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WhatsApp Chat Statistics</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        max-width: 1200px;
+      }
+      .heading {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .card {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .card-header {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        border-radius: 10px 10px 0 0;
+      }
+      .card-body {
+        padding: 20px;
+      }
+      .form-group label {
+        font-weight: bold;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+      }
+      .plot {
+        margin-top: 30px;
+      }
+      .table {
+        margin-top: 30px;
+      }
+      .top-section {
+        margin-bottom: 30px;
+      }
+      .section-heading {
+        text-align: center;
+        margin-top: 30px;
+        margin-bottom: 20px;
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+      .navbar-nav {
+        margin-left: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'index' %}">Upload File</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <h1 class="heading mb-4">WhatsApp Chat Statistics</h1>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">Select User for Analysis</div>
+            <div class="card-body">
+              <form method="post" action="{% url 'stats' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="userSelect">Select user:</label>
+                  <select class="form-control" id="userSelect" name="username">
+                    {% for user in unique_users %}
+                    <option value="{{ user }}" {% if user == username %}selected{% endif %}>{{ user }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Analyze</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">Statistics for {{ username }}</div>
+            <div class="card-body">
+              {% if username %}
+              <ul class="list-group">
+                <li class="list-group-item">Total messages: {{ msg }}</li>
+                <li class="list-group-item">Total words: {{ word }}</li>
+                <li class="list-group-item">Total media: {{ media }}</li>
+                <li class="list-group-item">Total links: {{ link }}</li>
+              </ul>
+              {% else %}
+              <p>No statistics available. Please select a user.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-section">
+        {% if top_user %}
+        <div class="section-heading">Top Users Statistics</div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="plot">{{ top_user_bar|safe }}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="plot">{{ top_user_pie|safe }}</div>
+          </div>
+        </div>
+        {% endif %}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="table">{{ top_user|safe }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="section-heading">Word and Emoji Analysis</div>
+          <div class="plot">{{ word_cloud|safe }}</div>
+          <div class="plot">{{ top_word|safe }}</div>
+          <div class="plot">{{ top_emoji|safe }}</div>
+        </div>
+        <div class="col-md-6">
+          <div class="section-heading">Activity Over Time</div>
+          <div class="plot">{{ year|safe }}</div>
+          <div class="plot">{{ month|safe }}</div>
+          <div class="plot">{{ day|safe }}</div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
